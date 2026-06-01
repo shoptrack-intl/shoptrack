@@ -1,232 +1,226 @@
-/* ============================================================
-   ShopTrack — Main Application
-   Runs on every page: sidebar, toasts, modals, dashboard
-   ============================================================ */
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-  Storage.init();
-  setActiveNav();
-  checkBackupReminder();
-
-  // If we're on the dashboard, load stats
-  const page = location.pathname.split('/').pop() || 'index.html';
-  if (page === 'index.html' || page === '') {
-    initDashboard();
-  }
-});
-
 // ============================================================
-// SIDEBAR — Highlight the active page
+// ShopTrack - app.js (Main Application)
 // ============================================================
-function setActiveNav() {
-  const page = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.sidebar-nav a').forEach(a => {
-    const href = a.getAttribute('href');
-    if (href === page || (page === '' && href === 'index.html')) {
-      a.classList.add('active');
-    } else {
-      a.classList.remove('active');
-    }
-  });
-}
 
-// ============================================================
-// SIDEBAR — Toggle for mobile (hamburger menu)
-// ============================================================
+// --- Sidebar Toggle ---
 function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
+  var sb = document.querySelector(".sidebar");
+  if (sb) sb.classList.toggle("collapsed");
 }
 
-// ============================================================
-// TOAST NOTIFICATIONS — Slide-in messages
-// ============================================================
-function showToast(msg, type = 'success', duration = 3500) {
-  // Create container if it doesn't exist
-  let container = document.querySelector('.toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-
-  // Create toast element
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-
-  // Add icon based on type
-  const icons = {
-    success: '✅',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️'
-  };
-  toast.innerHTML = `<span>${icons[type] || ''}</span> <span>${msg}</span>`;
-
-  container.appendChild(toast);
-
-  // Auto-remove after duration
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
+// --- Toast Notification ---
+function showToast(message, type, duration) {
+  type = type || "info";
+  duration = duration || 3000;
+  var toast = document.createElement("div");
+  toast.className = "toast toast-" + type;
+  toast.style.cssText = "position:fixed;top:20px;right:20px;z-index:9999;padding:14px 24px;border-radius:8px;color:white;font-size:0.95rem;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity 0.3s,transform 0.3s;opacity:0;transform:translateY(-10px);max-width:400px;";
+  if (type === "success") toast.style.background = "#2e7d32";
+  else if (type === "error" || type === "danger") toast.style.background = "#c62828";
+  else if (type === "warning") toast.style.background = "#e65100";
+  else toast.style.background = "#1565c0";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(function() { toast.style.opacity = "1"; toast.style.transform = "translateY(0)"; }, 50);
+  setTimeout(function() {
+    toast.style.opacity = "0"; toast.style.transform = "translateY(-10px)";
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
   }, duration);
-
-  // Click to dismiss early
-  toast.addEventListener('click', () => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  });
 }
 
-// ============================================================
-// MODAL — Popup dialog system
-// ============================================================
-function showModal(title, bodyHtml, buttons = []) {
-  // Create modal overlay if it doesn't exist
-  let overlay = document.getElementById('modal-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'modal-overlay';
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">
-          <h3 id="modal-title"></h3>
-          <button class="modal-close" onclick="hideModal()">&times;</button>
-        </div>
-        <div class="modal-body" id="modal-body"></div>
-        <div class="modal-footer" id="modal-footer"></div>
-      </div>
-    `;
+// --- Confirmation Modal ---
+function showConfirm(message) {
+  return new Promise(function(resolve) {
+    var overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;";
+    var card = document.createElement("div");
+    card.style.cssText = "background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);";
+    var msg = document.createElement("p");
+    msg.style.cssText = "font-size:1.05rem;color:#333;margin-bottom:24px;";
+    msg.textContent = message;
+    card.appendChild(msg);
+    var btnGroup = document.createElement("div");
+    btnGroup.style.cssText = "display:flex;gap:12px;justify-content:center;";
+    var btnYes = document.createElement("button");
+    btnYes.textContent = "Yes, Confirm";
+    btnYes.style.cssText = "padding:10px 24px;background:#c62828;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;";
+    btnYes.onclick = function() { document.body.removeChild(overlay); resolve(true); };
+    var btnNo = document.createElement("button");
+    btnNo.textContent = "Cancel";
+    btnNo.style.cssText = "padding:10px 24px;background:#e0e0e0;color:#333;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;";
+    btnNo.onclick = function() { document.body.removeChild(overlay); resolve(false); };
+    btnGroup.appendChild(btnYes);
+    btnGroup.appendChild(btnNo);
+    card.appendChild(btnGroup);
+    overlay.appendChild(card);
     document.body.appendChild(overlay);
+  });
+}
 
-    // Close when clicking outside the modal
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) hideModal();
-    });
+// --- Utility: Format Date ---
+var Utils = {
+  formatDate: function(dateStr) {
+    if (!dateStr) return "";
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  },
+  formatCurrency: function(val) {
+    var n = parseFloat(val) || 0;
+    return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
+};
 
-  // Set content
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-body').innerHTML = bodyHtml;
+// --- Populate Tech & Supplier Dropdowns ---
+function populateDropdowns() {
+  var techs = [];
+  var suppliers = [];
+  try { techs = JSON.parse(localStorage.getItem("shoptrack_technicians")) || []; } catch(e) {}
+  try { suppliers = JSON.parse(localStorage.getItem("shoptrack_suppliers")) || []; } catch(e) {}
 
-  // Build buttons
-  const footer = document.getElementById('modal-footer');
-  footer.innerHTML = '';
-  buttons.forEach(b => {
-    const btn = document.createElement('button');
-    btn.className = `btn ${b.class || 'btn-secondary'}`;
-    btn.textContent = b.text;
-    btn.onclick = b.onclick;
-    footer.appendChild(btn);
+  var techDropdowns = document.querySelectorAll(".tech-dropdown");
+  techDropdowns.forEach(function(sel) {
+    var val = sel.value;
+    var firstOption = sel.querySelector("option");
+    sel.innerHTML = "";
+    if (firstOption) sel.appendChild(firstOption);
+    techs.forEach(function(t) {
+      if (t.status === "active") {
+        var opt = document.createElement("option");
+        opt.value = t.name;
+        opt.textContent = t.name;
+        sel.appendChild(opt);
+      }
+    });
+    if (val) sel.value = val;
   });
 
-  // Show the modal
-  overlay.classList.add('show');
+  var suppDropdowns = document.querySelectorAll(".supplier-dropdown");
+  suppDropdowns.forEach(function(sel) {
+    var val = sel.value;
+    var firstOption = sel.querySelector("option");
+    sel.innerHTML = "";
+    if (firstOption) sel.appendChild(firstOption);
+    suppliers.forEach(function(s) {
+      var name = typeof s === "string" ? s : s.name;
+      var opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+    if (val) sel.value = val;
+  });
 }
 
-function hideModal() {
-  const overlay = document.getElementById('modal-overlay');
-  if (overlay) overlay.classList.remove('show');
+// --- Load Dashboard Stats ---
+function loadDashboard() {
+  var jobs = [];
+  var parts = [];
+  var techs = [];
+  try { jobs = JSON.parse(localStorage.getItem("shoptrack_jobs")) || []; } catch(e) {}
+  try { parts = JSON.parse(localStorage.getItem("shoptrack_parts")) || []; } catch(e) {}
+  try { techs = JSON.parse(localStorage.getItem("shoptrack_technicians")) || []; } catch(e) {}
+
+  var totalJobs = jobs.length;
+  var totalHours = 0;
+  jobs.forEach(function(j) { totalHours += parseFloat(j.hours) || 0; });
+
+  var partsCost = 0;
+  parts.forEach(function(p) { if (!p.returned) partsCost += parseFloat(p.price) || 0; });
+
+  var activeTechs = techs.filter(function(t) { return t.status === "active"; }).length;
+
+  var el;
+  el = document.getElementById("stat-jobs");
+  if (el) el.textContent = totalJobs.toLocaleString();
+  el = document.getElementById("stat-hours");
+  if (el) el.textContent = totalHours.toFixed(1);
+  el = document.getElementById("stat-parts-cost");
+  if (el) el.textContent = Utils.formatCurrency(partsCost);
+  el = document.getElementById("stat-techs");
+  if (el) el.textContent = activeTechs;
 }
 
-// Shortcut: Confirmation dialog
-function showConfirm(msg, onConfirm) {
-  showModal(
-    'Are you sure?',
-    `<p style="font-size: 16px; line-height: 1.7;">${msg}</p>`,
-    [
-      {
-        text: 'Cancel',
-        class: 'btn-secondary',
-        onclick: hideModal
-      },
-      {
-        text: 'Yes, I am sure',
-        class: 'btn-danger',
-        onclick() {
-          hideModal();
-          onConfirm();
-        }
-      }
-    ]
-  );
-}
+// --- Load Recent Jobs ---
+function loadRecentJobs() {
+  var container = document.getElementById("recent-jobs");
+  if (!container) return;
 
-// ============================================================
-// DASHBOARD — Calculate and display stats
-// ============================================================
-function initDashboard() {
-  const jobs = Storage.getAll(KEYS.jobs);
-  const parts = Storage.getAll(KEYS.parts);
-  const techs = Storage.getAll(KEYS.techs).filter(t => t.status === 'active');
+  var jobs = [];
+  try { jobs = JSON.parse(localStorage.getItem("shoptrack_jobs")) || []; } catch(e) {}
 
-  // Calculate totals
-  const totalHours = Utils.sumBy(jobs, 'hours');
-  const totalPartsCost = Utils.sumBy(parts.filter(p => !p.returned), 'price');
+  container.innerHTML = "";
 
-  // Update stat cards
-  const el = id => document.getElementById(id);
-  if (el('stat-jobs')) el('stat-jobs').textContent = jobs.length;
-  if (el('stat-hours')) el('stat-hours').textContent = totalHours.toFixed(1);
-  if (el('stat-parts-cost')) el('stat-parts-cost').textContent = Utils.formatCurrency(totalPartsCost);
-  if (el('stat-techs')) el('stat-techs').textContent = techs.length;
-
-  // Render recent jobs table
-  const recentDiv = el('recent-jobs');
-  if (recentDiv) {
-    const recent = Utils.sortArray(jobs, 'date', 'desc').slice(0, 8);
-
-    if (recent.length === 0) {
-      recentDiv.innerHTML = `
-        <div class="empty-state">
-          <div class="es-icon">📋</div>
-          <p>No job entries yet. Click "Add New Job" to get started!</p>
-        </div>
-      `;
-    } else {
-      let html = `
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Invoice #</th>
-                <th>Vehicle</th>
-                <th>Job Performed</th>
-                <th style="text-align:right">Hours</th>
-                <th>Technician</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-      recent.forEach(j => {
-        const vehicle = [j.vehicleYear, j.vehicleMake, j.vehicleModel].filter(Boolean).join(' ');
-        const badgeClass = j.custType === 'Fleet' ? 'badge-fleet' : 'badge-customer';
-        html += `
-          <tr>
-            <td>${Utils.formatDate(j.date)}</td>
-            <td>${Utils.escapeHtml(j.invoiceNum)}</td>
-            <td>${Utils.escapeHtml(vehicle)}</td>
-            <td>${Utils.escapeHtml(j.jobPerformed)}</td>
-            <td style="text-align:right">${parseFloat(j.hours).toFixed(2)}</td>
-            <td>${Utils.escapeHtml(j.techName)}</td>
-            <td><span class="badge ${badgeClass}">${j.custType || 'Customer'}</span></td>
-          </tr>
-        `;
-      });
-      html += '</tbody></table></div>';
-      recentDiv.innerHTML = html;
-    }
+  if (jobs.length === 0) {
+    var empty = document.createElement("div");
+    empty.style.cssText = "text-align:center;padding:40px 20px;color:#999;";
+    var icon = document.createElement("div");
+    icon.style.fontSize = "2.5rem";
+    icon.textContent = "\u{1F4CB}";
+    empty.appendChild(icon);
+    var p1 = document.createElement("p");
+    p1.style.cssText = "margin-top:8px;font-size:1rem;";
+    p1.textContent = "No job entries yet. ";
+    var addLink = document.createElement("a");
+    addLink.href = "jobs.html";
+    addLink.textContent = "Add your first job!";
+    addLink.style.color = "#2e7d32";
+    addLink.style.fontWeight = "bold";
+    addLink.style.textDecoration = "underline";
+    p1.appendChild(addLink);
+    empty.appendChild(p1);
+    container.appendChild(empty);
+    return;
   }
+
+  var sorted = jobs.slice().sort(function(a, b) {
+    return new Date(b.date) - new Date(a.date) || (b.createdAt || "").localeCompare(a.createdAt || "");
+  });
+  var recent = sorted.slice(0, 10);
+
+  recent.forEach(function(j) {
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;flex-wrap:wrap;gap:6px;";
+    var left = document.createElement("div");
+    var dateSpan = document.createElement("span");
+    dateSpan.style.cssText = "font-size:0.85rem;color:#888;margin-right:12px;";
+    dateSpan.textContent = Utils.formatDate(j.date);
+    left.appendChild(dateSpan);
+    var invSpan = document.createElement("span");
+    invSpan.style.cssText = "font-weight:600;margin-right:8px;";
+    invSpan.textContent = "#" + (j.invoiceNum || "N/A");
+    left.appendChild(invSpan);
+    var jobSpan = document.createElement("span");
+    jobSpan.style.color = "#555";
+    var jobText = j.jobPerformed || "";
+    jobSpan.textContent = jobText.length > 50 ? jobText.substring(0, 50) + "..." : jobText;
+    left.appendChild(jobSpan);
+    row.appendChild(left);
+    var right = document.createElement("div");
+    right.style.cssText = "display:flex;gap:12px;align-items:center;";
+    var hrsSpan = document.createElement("span");
+    hrsSpan.style.cssText = "font-weight:600;color:#1b5e20;";
+    hrsSpan.textContent = (parseFloat(j.hours) || 0).toFixed(1) + "h";
+    right.appendChild(hrsSpan);
+    var techSpan = document.createElement("span");
+    techSpan.style.cssText = "font-size:0.85rem;color:#666;";
+    techSpan.textContent = j.techName || "";
+    right.appendChild(techSpan);
+    var badge = document.createElement("span");
+    badge.style.cssText = "font-size:0.75rem;padding:2px 8px;border-radius:4px;font-weight:600;";
+    if (j.custType === "Fleet") {
+      badge.style.background = "#e3f2fd"; badge.style.color = "#1565c0";
+      badge.textContent = "Fleet";
+    } else {
+      badge.style.background = "#e8f5e9"; badge.style.color = "#2e7d32";
+      badge.textContent = "Customer";
+    }
+    right.appendChild(badge);
+    row.appendChild(right);
+    container.appendChild(row);
+  });
 }
 
-// ============================================================
-// BACKUP REMINDER — Shows notice on dashboard
-// ============================================================
+// --- Backup Reminder (uses DOM methods - NO innerHTML with anchor tags) ---
 function checkBackupReminder() {
   var noticeEl = document.getElementById("backup-notice");
   if (!noticeEl) return;
@@ -257,36 +251,27 @@ function checkBackupReminder() {
   if (!lastBackup) {
     applyWarningStyle();
     noticeEl.innerHTML = "";
-
     noticeEl.appendChild(document.createTextNode("\u26A0\uFE0F You have "));
-
     var bold = document.createElement("strong");
     bold.textContent = "never";
     noticeEl.appendChild(bold);
-
     noticeEl.appendChild(document.createTextNode(" backed up your data. Please go to "));
     noticeEl.appendChild(buildSettingsLink());
     noticeEl.appendChild(document.createTextNode(" and export a backup!"));
-
   } else {
     var lastDate = new Date(lastBackup);
     var now = new Date();
     var diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
-
     if (diffDays > 7) {
       applyWarningStyle();
       noticeEl.innerHTML = "";
-
       noticeEl.appendChild(document.createTextNode("\u26A0\uFE0F Your last backup was "));
-
       var bold2 = document.createElement("strong");
       bold2.textContent = diffDays + " days ago";
       noticeEl.appendChild(bold2);
-
       noticeEl.appendChild(document.createTextNode(". Please go to "));
       noticeEl.appendChild(buildSettingsLink());
       noticeEl.appendChild(document.createTextNode(" and export a fresh backup!"));
-
     } else {
       noticeEl.style.display = "block";
       noticeEl.style.background = "#e8f5e9";
@@ -296,7 +281,6 @@ function checkBackupReminder() {
       noticeEl.style.marginBottom = "20px";
       noticeEl.style.fontSize = "0.95rem";
       noticeEl.style.color = "#2e7d32";
-
       var formatted = lastDate.toLocaleDateString("en-US", {
         year: "numeric", month: "short", day: "numeric"
       });
@@ -304,3 +288,15 @@ function checkBackupReminder() {
     }
   }
 }
+
+// --- DOMContentLoaded: Initialize ---
+document.addEventListener("DOMContentLoaded", function() {
+  populateDropdowns();
+
+  var page = window.location.pathname.split("/").pop() || "index.html";
+  if (page === "index.html" || page === "" || page === "shoptrack" || page.endsWith("shoptrack/")) {
+    loadDashboard();
+    loadRecentJobs();
+    checkBackupReminder();
+  }
+});
