@@ -3,122 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopTrack — Dashboard</title>
-  css/style.css
-  css/print.css
+  <title>ShopTrack - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
-
-  <!-- ============================================================
-       SIDEBAR NAVIGATION (same on every page)
-       ============================================================ -->
-  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
 
   <nav class="sidebar">
     <div class="sidebar-brand">
-      <h2>🔧 ShopTrack</h2>
+      <h2>&#128295; ShopTrack</h2>
       <small>Auto Repair Shop Manager</small>
     </div>
-
     <ul class="sidebar-nav">
       <li><a href="index.html" class="active">
-        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-icon">&#128202;</span> Dashboard
       </a></li>
-      <li>jobs.html
-        <span class="nav-icon">⏱️</span> Tech Hours
+      <li><a href="jobs.html">
+        <span class="nav-icon">&#9201;</span> Tech Hours
       </a></li>
-      <li>parts.html
-        <span class="nav-icon">🔩</span> Purchased Parts
+      <li><a href="parts.html">
+        <span class="nav-icon">&#128297;</span> Purchased Parts
       </a></li>
-      <li>reports.html</li>
-      <li>settings.html
-        <span class="nav-icon">⚙️</span> Settings
+      <li><a href="reports.html">
+        <span class="nav-icon">&#128196;</span> Reports
+      </a></li>
+      <li><a href="settings.html">
+        <span class="nav-icon">&#9881;</span> Settings
       </a></li>
     </ul>
-
     <div class="sidebar-footer">
-      ShopTrack v1.0 &copy; 2026
+      ShopTrack v1.0 &amp; copy; 2026
     </div>
   </nav>
 
-  <!-- ============================================================
-       MAIN CONTENT — Dashboard
-       ============================================================ -->
   <main class="main">
-
-    <!-- Page Header -->
     <div class="page-header">
       <div>
-        <h1>📊 Dashboard</h1>
+        <h1>Dashboard</h1>
         <p>Welcome to ShopTrack! Here is your shop overview.</p>
       </div>
     </div>
 
-    <!-- Backup Notice -->
-    <div id="backup-notice" class="backup-notice" style="display:none;">
-      <!-- Filled by app.js checkBackupReminder() -->
-    </div>
+    <div id="backup-notice" class="backup-notice" style="display:none;"></div>
 
-    <!-- Stat Cards -->
     <div class="cards">
-
-      <!-- Total Jobs -->
       <div class="card">
         <div class="card-label">Total Jobs</div>
         <div class="card-value" id="stat-jobs">0</div>
         <div class="card-sub">All job entries recorded</div>
       </div>
-
-      <!-- Total Hours -->
       <div class="card info">
         <div class="card-label">Total Hours</div>
         <div class="card-value" id="stat-hours">0</div>
         <div class="card-sub">Combined tech hours</div>
       </div>
-
-      <!-- Total Parts Cost -->
       <div class="card warning">
         <div class="card-label">Parts Cost</div>
         <div class="card-value" id="stat-parts-cost">$0.00</div>
         <div class="card-sub">Excluding returned items</div>
       </div>
-
-      <!-- Active Technicians -->
       <div class="card">
         <div class="card-label">Active Techs</div>
         <div class="card-value" id="stat-techs">0</div>
         <div class="card-sub">Currently active technicians</div>
       </div>
-
     </div>
 
-    <!-- Quick Action Buttons -->
     <div class="quick-actions">
-      jobs.html btn-primary btn-lg">➕ Add New Job</a>
-      parts.html🔩 Add New Part</a>
-      reports.html
+      <a href="jobs.html" class="btn btn-primary btn-lg">+ Add New Job</a>
+      <a href="parts.html" class="btn btn-info btn-lg">+ Add New Part</a>
+      <a href="reports.html" class="btn btn-warning btn-lg">View Reports</a>
     </div>
 
-    <!-- Recent Jobs Table -->
     <div class="panel">
-      <div class="panel-title">📋 Recent Job Entries</div>
+      <div class="panel-title">Recent Job Entries</div>
       <div id="recent-jobs">
-        <!-- Filled by app.js initDashboard() -->
         <div class="empty-state">
-          <div class="es-icon">📋</div>
+          <div class="es-icon">&#128203;</div>
           <p>Loading...</p>
         </div>
       </div>
     </div>
-
   </main>
 
-  <!-- ============================================================
-       SCRIPTS (order matters!)
-       ============================================================ -->
-  js/utils.js
-  js/storage.js
-  js/app.js
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>

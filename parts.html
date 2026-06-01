@@ -3,236 +3,158 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopTrack — Purchased Parts</title>
-  css/style.css
-  css/print.css
+  <title>ShopTrack - Settings</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
-
-  <!-- ============================================================
-       SIDEBAR NAVIGATION
-       ============================================================ -->
-  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
 
   <nav class="sidebar">
     <div class="sidebar-brand">
-      <h2>🔧 ShopTrack</h2>
+      <h2>&#128295; ShopTrack</h2>
       <small>Auto Repair Shop Manager</small>
     </div>
-
     <ul class="sidebar-nav">
       <li><a href="index.html">
-        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-icon">&#128202;</span> Dashboard
       </a></li>
       <li><a href="jobs.html">
-        <span class="nav-icon">⏱️</span> Tech Hours
+        <span class="nav-icon">&#9201;</span> Tech Hours
       </a></li>
-      <li><a href="parts.html" class="active">
-        <span class="nav-icon">🔩</span> Purchased Parts
+      <li><a href="parts.html">
+        <span class="nav-icon">&#128297;</span> Purchased Parts
       </a></li>
-      <li>reports.html</li>
-      <li>settings.html
-        <span class="nav-icon">⚙️</span> Settings
+      <li><a href="reports.html">
+        <span class="nav-icon">&#128196;</span> Reports
+      </a></li>
+      <li><a href="settings.html" class="active">
+        <span class="nav-icon">&#9881;</span> Settings
       </a></li>
     </ul>
-
     <div class="sidebar-footer">
-      ShopTrack v1.0 &copy; 2026
+      ShopTrack v1.0 &amp; copy; 2026
     </div>
   </nav>
 
-  <!-- ============================================================
-       MAIN CONTENT — Purchased Parts
-       ============================================================ -->
-  <main class="main">
-
-    <!-- Page Header -->
+  <main class="main" id="settings-page">
     <div class="page-header">
       <div>
-        <h1>🔩 Purchased Parts</h1>
-        <p>Track all parts bought, prices, suppliers, and returns.</p>
+        <h1>Settings</h1>
+        <p>Manage technicians, suppliers, shop info, and data backups.</p>
       </div>
     </div>
 
-    <!-- ========================================================
-         PART ENTRY FORM
-         ======================================================== -->
+    <div class="settings-grid">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <div class="panel-title" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">Technicians</div>
+          <span style="color:var(--gray);font-size:0.85rem;" id="techs-count">0 active</span>
+        </div>
+        <form id="add-tech-form" class="add-inline">
+          <input type="text" id="new-tech-name" placeholder="Enter technician name..." required>
+          <button type="submit" class="btn btn-primary btn-sm">+ Add</button>
+        </form>
+        <div id="techs-list" style="max-height:400px;overflow-y:auto;">
+          <p style="color:var(--gray);text-align:center;padding:20px;">Loading...</p>
+        </div>
+        <p style="color:var(--gray);font-size:0.82rem;margin-top:12px;">
+          <b>Tip:</b> Deactivated technicians will not appear in dropdown menus, but their existing data is kept safe.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <div class="panel-title" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">Suppliers</div>
+          <span style="color:var(--gray);font-size:0.85rem;" id="suppliers-count">0 suppliers</span>
+        </div>
+        <form id="add-supplier-form" class="add-inline">
+          <input type="text" id="new-supplier-name" placeholder="Enter supplier name..." required>
+          <button type="submit" class="btn btn-primary btn-sm">+ Add</button>
+        </form>
+        <div id="suppliers-list" style="max-height:400px;overflow-y:auto;">
+          <p style="color:var(--gray);text-align:center;padding:20px;">Loading...</p>
+        </div>
+        <p style="color:var(--gray);font-size:0.82rem;margin-top:12px;">
+          <b>Tip:</b> Removing a supplier will not affect existing part entries that already reference it.
+        </p>
+      </div>
+    </div>
+
     <div class="panel">
-      <div class="panel-title" id="parts-form-title">➕ Add New Part Entry</div>
-
-      <form id="part-form">
-
-        <!-- Row 1: Date, Part Number, Description -->
+      <div class="panel-title">Shop Information</div>
+      <p style="color:var(--gray);font-size:0.9rem;margin-bottom:16px;">This information appears at the top of your printed reports.</p>
+      <form id="shop-info-form">
         <div class="form-grid">
-
           <div class="form-group">
-            <label for="part-date">Date <span class="req">*</span></label>
-            <input type="date" id="part-date" name="date" required>
+            <label for="shop-name">Shop Name</label>
+            <input type="text" id="shop-name" placeholder="e.g. Joe's Auto Repair">
           </div>
-
           <div class="form-group">
-            <label for="part-number">Part Number</label>
-            <input type="text" id="part-number" name="partNumber" placeholder="e.g. 482-830003">
+            <label for="shop-phone">Phone Number</label>
+            <input type="text" id="shop-phone" placeholder="e.g. (506) 555-1234">
           </div>
-
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="part-desc">Description <span class="req">*</span></label>
-            <input type="text" id="part-desc" name="description" placeholder="e.g. Hub assembly, brake pads, oil filter..." required>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="shop-address">Address</label>
+            <input type="text" id="shop-address" placeholder="e.g. 123 Main Street, Fredericton, NB">
           </div>
-
         </div>
-
-        <!-- Row 2: Quantity, Invoice #, Price -->
-        <div class="form-grid" style="margin-top: 18px;">
-
-          <div class="form-group">
-            <label for="part-qty">Quantity</label>
-            <input type="number" id="part-qty" name="quantity" min="1" value="1" placeholder="1">
-          </div>
-
-          <div class="form-group">
-            <label for="part-invoice">Order / Invoice #</label>
-            <input type="text" id="part-invoice" name="invoiceNum" placeholder="e.g. 913">
-          </div>
-
-          <div class="form-group">
-            <label for="part-price">Price ($)</label>
-            <input type="number" id="part-price" name="price" step="0.01" min="0" placeholder="e.g. 196.83">
-            <span class="help-text">Total price for all units</span>
-          </div>
-
-        </div>
-
-        <!-- Row 3: Supplier, Charged To -->
-        <div class="form-grid" style="margin-top: 18px;">
-
-          <div class="form-group">
-            <label for="part-supplier">Supplier</label>
-            <select id="part-supplier" name="supplier" class="supplier-dropdown">
-              <option value="">-- Select Supplier --</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="part-charged">Charged To</label>
-            <input type="text" id="part-charged" name="chargedTo" placeholder="e.g. Timothy, Shop Supply, Fleet...">
-            <span class="help-text">Who is this part billed to?</span>
-          </div>
-
-        </div>
-
-        <!-- Row 4: Returned checkbox + Return Notes -->
-        <div class="form-grid" style="margin-top: 18px;">
-
-          <div class="form-group">
-            <label>&nbsp;</label>
-            <div style="display:flex; align-items:center; gap:12px; min-height:48px;">
-              <input type="checkbox" id="part-returned" name="returned"
-                     style="width:24px; height:24px; accent-color:var(--danger); cursor:pointer;">
-              <label for="part-returned" style="margin:0; cursor:pointer; font-size:1rem; color:var(--danger);">
-                ↩️ This part was <b>returned</b>
-              </label>
-            </div>
-          </div>
-
-          <!-- Return Notes (hidden by default, shown when "returned" is checked) -->
-          <div class="form-group" id="return-notes-group" style="display:none;">
-            <label for="part-return-notes">Return Notes</label>
-            <input type="text" id="part-return-notes" name="returnNotes" placeholder="e.g. Debit returned, wrong part, defective...">
-          </div>
-
-        </div>
-
-        <!-- Form Action Buttons -->
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-part">💾 Save Part</button>
-          <button type="button" class="btn btn-secondary" onclick="clearPartForm()">🔄 Clear Form</button>
+          <button type="submit" class="btn btn-primary">Save Shop Info</button>
         </div>
-
       </form>
     </div>
 
-    <!-- ========================================================
-         FILTERS
-         ======================================================== -->
     <div class="panel">
-      <div class="panel-title">🔍 Filter Parts</div>
-
-      <div class="filters">
-
-        <div class="form-group">
-          <label for="pf-start">From Date</label>
-          <input type="date" id="pf-start">
+      <div class="panel-title">Data Backup &amp; Restore</div>
+      <p style="color:var(--gray);font-size:0.9rem;margin-bottom:20px;">
+        Your data is stored in this browser. If the browser data is cleared, your data will be lost. <b>Always keep a backup!</b>
+      </p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+        <div style="flex:1;min-width:250px;background:var(--primary-light);border-radius:var(--radius);padding:20px;">
+          <h4 style="color:var(--primary);margin-bottom:8px;">Export Backup</h4>
+          <p style="font-size:0.9rem;color:var(--gray-dark);margin-bottom:14px;">
+            Downloads a <b>.json</b> file containing ALL your data. Save this file on your computer, USB drive, or cloud storage.
+          </p>
+          <button type="button" class="btn btn-primary" id="btn-export">Export All Data</button>
         </div>
-
-        <div class="form-group">
-          <label for="pf-end">To Date</label>
-          <input type="date" id="pf-end">
+        <div style="flex:1;min-width:250px;background:var(--info-light);border-radius:var(--radius);padding:20px;">
+          <h4 style="color:var(--info);margin-bottom:8px;">Import Backup</h4>
+          <p style="font-size:0.9rem;color:var(--gray-dark);margin-bottom:14px;">
+            Restore your data from a previously exported <b>.json</b> backup file. <b>Warning:</b> This will replace ALL current data.
+          </p>
+          <button type="button" class="btn btn-info" id="btn-import-trigger">Import Data from File</button>
+          <input type="file" id="import-file" accept=".json" style="display:none;">
         </div>
-
-        <div class="form-group">
-          <label for="pf-supplier">Supplier</label>
-          <select id="pf-supplier" class="supplier-dropdown">
-            <option value="">-- All Suppliers --</option>
-          </select>
-        </div>
-
-        <div class="form-group" style="flex:0;">
-          <label>&nbsp;</label>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-primary btn-sm" id="btn-filter-parts">🔍 Filter</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-parts-filter">✖ Clear</button>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <!-- ========================================================
-         PARTS DATA TABLE
-         ======================================================== -->
-    <div class="panel">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-        <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">📦 All Purchased Parts</div>
-        <span style="color:var(--gray); font-size:0.9rem;" id="parts-count">0 entries</span>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Part #</th>
-              <th>Description</th>
-              <th style="text-align:center">Qty</th>
-              <th>Invoice</th>
-              <th style="text-align:right">Price</th>
-              <th>Supplier</th>
-              <th>Status</th>
-              <th style="text-align:center">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="parts-tbody">
-            <!-- Filled by parts.js renderPartsTable() -->
-            <tr>
-              <td colspan="9" style="text-align:center; padding:40px; color:var(--gray);">
-                Loading...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="panel" style="border-left:4px solid var(--danger);">
+      <div class="panel-title" style="color:var(--danger);">Danger Zone</div>
+      <p style="color:var(--gray-dark);font-size:0.9rem;margin-bottom:16px;">
+        This will permanently delete <b>ALL</b> your data. The system will reset to factory defaults. <b>This cannot be undone!</b>
+      </p>
+      <p style="color:var(--danger);font-size:0.9rem;margin-bottom:16px;">Make sure you have exported a backup before doing this!</p>
+      <button type="button" class="btn btn-danger" id="btn-clear-all">Clear All Data</button>
     </div>
 
+    <div class="panel" style="background:var(--primary-light);border-left:4px solid var(--primary-bright);">
+      <div class="panel-title" style="border-bottom-color:var(--primary-bright);">System Information</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:0.92rem;">
+        <span style="color:var(--gray);font-weight:600;">System:</span><span>ShopTrack - Auto Repair Shop Manager</span>
+        <span style="color:var(--gray);font-weight:600;">Version:</span><span>1.0</span>
+        <span style="color:var(--gray);font-weight:600;">Storage:</span><span>Browser localStorage (local data only)</span>
+        <span style="color:var(--gray);font-weight:600;">Backup Format:</span><span>JSON file (.json)</span>
+        <span style="color:var(--gray);font-weight:600;">Built With:</span><span>HTML + CSS + JavaScript (no frameworks)</span>
+        <span style="color:var(--gray);font-weight:600;">Designed For:</span><span>Auto repair shop bi-monthly reporting</span>
+      </div>
+    </div>
   </main>
 
-  <!-- ============================================================
-       SCRIPTS
-       ============================================================ -->
-  js/utils.js
-  js/storage.js
-  js/app.js
-  <script src="js/parts.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/settings.js"></script>
 
 </body>
 </html>
