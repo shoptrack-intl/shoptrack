@@ -228,45 +228,79 @@ function initDashboard() {
 // BACKUP REMINDER — Shows notice on dashboard
 // ============================================================
 function checkBackupReminder() {
-  const last = Storage.getLastBackup();
-  const notice = document.getElementById('backup-notice');
-  if (!notice) return;
+  var noticeEl = document.getElementById("backup-notice");
+  if (!noticeEl) return;
 
-  if (!last) {
-    // Never backed up
-    notice.innerHTML = `
-      <span class="bn-icon">⚠️</span>
-      <span>You have <b>never</b> backed up your data. Please go to
-      settings.htmlvar(--warning);text-decoration:underline;">Settings</a>
-      and export a backup!</span>
-    `;
-    notice.style.display = 'flex';
-    notice.style.background = 'var(--warning-light)';
-    notice.style.borderColor = 'var(--warning)';
+  var lastBackup = localStorage.getItem("shoptrack_lastBackup");
+
+  function buildSettingsLink() {
+    var link = document.createElement("a");
+    link.href = "settings.html";
+    link.textContent = "Settings";
+    link.style.color = "#e65100";
+    link.style.textDecoration = "underline";
+    link.style.fontWeight = "bold";
+    return link;
+  }
+
+  function applyWarningStyle() {
+    noticeEl.style.display = "block";
+    noticeEl.style.background = "#fff3e0";
+    noticeEl.style.border = "2px solid #ff9800";
+    noticeEl.style.borderRadius = "8px";
+    noticeEl.style.padding = "16px 20px";
+    noticeEl.style.marginBottom = "20px";
+    noticeEl.style.fontSize = "0.95rem";
+    noticeEl.style.color = "#e65100";
+  }
+
+  if (!lastBackup) {
+    applyWarningStyle();
+    noticeEl.innerHTML = "";
+
+    noticeEl.appendChild(document.createTextNode("\u26A0\uFE0F You have "));
+
+    var bold = document.createElement("strong");
+    bold.textContent = "never";
+    noticeEl.appendChild(bold);
+
+    noticeEl.appendChild(document.createTextNode(" backed up your data. Please go to "));
+    noticeEl.appendChild(buildSettingsLink());
+    noticeEl.appendChild(document.createTextNode(" and export a backup!"));
+
   } else {
-    // Check how many days since last backup
-    const days = Math.floor((Date.now() - new Date(last + 'T00:00:00').getTime()) / 86400000);
+    var lastDate = new Date(lastBackup);
+    var now = new Date();
+    var diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
 
-    if (days >= 3) {
-      // Overdue backup
-      notice.innerHTML = `
-        <span class="bn-icon">⚠️</span>
-        <span>Your last backup was <b>${days} days ago</b> (${Utils.formatDate(last)}).
-        Please export a new backup in
-        settings.htmlwarning);text-decoration:underline;">Settings</a>!</span>
-      `;
-      notice.style.display = 'flex';
-      notice.style.background = 'var(--warning-light)';
-      notice.style.borderColor = 'var(--warning)';
+    if (diffDays > 7) {
+      applyWarningStyle();
+      noticeEl.innerHTML = "";
+
+      noticeEl.appendChild(document.createTextNode("\u26A0\uFE0F Your last backup was "));
+
+      var bold2 = document.createElement("strong");
+      bold2.textContent = diffDays + " days ago";
+      noticeEl.appendChild(bold2);
+
+      noticeEl.appendChild(document.createTextNode(". Please go to "));
+      noticeEl.appendChild(buildSettingsLink());
+      noticeEl.appendChild(document.createTextNode(" and export a fresh backup!"));
+
     } else {
-      // All good
-      notice.innerHTML = `
-        <span class="bn-icon">✅</span>
-        <span>Last backup: <b>${Utils.formatDate(last)}</b>. You are up to date!</span>
-      `;
-      notice.style.display = 'flex';
-      notice.style.background = 'var(--primary-light)';
-      notice.style.borderColor = 'var(--primary-bright)';
+      noticeEl.style.display = "block";
+      noticeEl.style.background = "#e8f5e9";
+      noticeEl.style.border = "2px solid #4caf50";
+      noticeEl.style.borderRadius = "8px";
+      noticeEl.style.padding = "16px 20px";
+      noticeEl.style.marginBottom = "20px";
+      noticeEl.style.fontSize = "0.95rem";
+      noticeEl.style.color = "#2e7d32";
+
+      var formatted = lastDate.toLocaleDateString("en-US", {
+        year: "numeric", month: "short", day: "numeric"
+      });
+      noticeEl.textContent = "\u2705 Last backup: " + formatted + ". Your data is safe!";
     }
   }
 }
