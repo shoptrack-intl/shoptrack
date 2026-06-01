@@ -62,18 +62,6 @@ function showConfirm(message) {
   });
 }
 
-// --- Utility: Format Date ---
-var Utils = {
-  formatDate: function(dateStr) {
-    if (!dateStr) return "";
-    var d = new Date(dateStr + "T00:00:00");
-    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  },
-  formatCurrency: function(val) {
-    var n = parseFloat(val) || 0;
-    return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-};
 
 // --- Populate Tech & Supplier Dropdowns ---
 function populateDropdowns() {
@@ -115,6 +103,13 @@ function populateDropdowns() {
     if (val) sel.value = val;
   });
 }
+
+// --- Helper: get data from localStorage ---
+function getData(name) {
+  var key = "shoptrack_" + name;
+  try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
+}
+
 
 // --- Load Dashboard Stats ---
 function loadDashboard() {
