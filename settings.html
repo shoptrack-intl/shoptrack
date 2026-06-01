@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopTrack — Settings</title>
+  css/style.css
+  css/print.css
+</head>
+<body>
+
+  <!-- ============================================================
+       SIDEBAR NAVIGATION
+       ============================================================ -->
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <h2>🔧 ShopTrack</h2>
+      <small>Auto Repair Shop Manager</small>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">📊</span> Dashboard
+      </a></li>
+      <li><a href="jobs.html">
+        <span class="nav-icon">⏱️</span> Tech Hours
+      </a></li>
+      <li><a href="parts.html">
+        <span class="nav-icon">🔩</span> Purchased Parts
+      </a></li>
+      <li><a href="reports.html">
+        <span class="nav-icon">📄</span> Reports
+      </a></li>
+      <li><a href="settings.html" class="active">
+        <span class="nav-icon">⚙️</span> Settings
+      </a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      ShopTrack v1.0 &copy; 2026
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN CONTENT — Settings
+       ============================================================ -->
+  <main class="main" id="settings-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1>⚙️ Settings</h1>
+        <p>Manage technicians, suppliers, shop info, and data backups.</p>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         TWO-COLUMN LAYOUT: Technicians & Suppliers
+         ======================================================== -->
+    <div class="settings-grid">
+
+      <!-- ============================
+           LEFT: Manage Technicians
+           ============================ -->
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+          <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">👨‍🔧 Technicians</div>
+          <span style="color:var(--gray); font-size:0.85rem;" id="techs-count">0 active</span>
+        </div>
+
+        <!-- Add New Technician -->
+        <form id="add-tech-form" class="add-inline">
+          <input type="text" id="new-tech-name" placeholder="Enter technician name..." required>
+          <button type="submit" class="btn btn-primary btn-sm">➕ Add</button>
+        </form>
+
+        <!-- Technicians List -->
+        <div id="techs-list" style="max-height:400px; overflow-y:auto;">
+          <!-- Filled by settings.js renderTechs() -->
+          <p style="color:var(--gray); text-align:center; padding:20px;">Loading...</p>
+        </div>
+
+        <p style="color:var(--gray); font-size:0.82rem; margin-top:12px;">
+          💡 <b>Tip:</b> Deactivated technicians won't appear in dropdown menus,
+          but their existing data is kept safe.
+        </p>
+      </div>
+
+      <!-- ============================
+           RIGHT: Manage Suppliers
+           ============================ -->
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+          <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">🏭 Suppliers</div>
+          <span style="color:var(--gray); font-size:0.85rem;" id="suppliers-count">0 suppliers</span>
+        </div>
+
+        <!-- Add New Supplier -->
+        <form id="add-supplier-form" class="add-inline">
+          <input type="text" id="new-supplier-name" placeholder="Enter supplier name..." required>
+          <button type="submit" class="btn btn-primary btn-sm">➕ Add</button>
+        </form>
+
+        <!-- Suppliers List -->
+        <div id="suppliers-list" style="max-height:400px; overflow-y:auto;">
+          <!-- Filled by settings.js renderSuppliers() -->
+          <p style="color:var(--gray); text-align:center; padding:20px;">Loading...</p>
+        </div>
+
+        <p style="color:var(--gray); font-size:0.82rem; margin-top:12px;">
+          💡 <b>Tip:</b> Removing a supplier won't affect existing part entries
+          that already reference it.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ========================================================
+         SHOP INFORMATION
+         ======================================================== -->
+    <div class="panel">
+      <div class="panel-title">🏪 Shop Information</div>
+      <p style="color:var(--gray); font-size:0.9rem; margin-bottom:16px;">
+        This information appears at the top of your printed reports.
+      </p>
+
+      <form id="shop-info-form">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="shop-name">Shop Name</label>
+            <input type="text" id="shop-name" placeholder="e.g. Joe's Auto Repair">
+          </div>
+
+          <div class="form-group">
+            <label for="shop-phone">Phone Number</label>
+            <input type="text" id="shop-phone" placeholder="e.g. (506) 555-1234">
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="shop-address">Address</label>
+            <input type="text" id="shop-address" placeholder="e.g. 123 Main Street, Fredericton, NB">
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">💾 Save Shop Info</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========================================================
+         DATA MANAGEMENT: Export, Import, Clear
+         ======================================================== -->
+    <div class="panel">
+      <div class="panel-title">💾 Data Backup & Restore</div>
+      <p style="color:var(--gray); font-size:0.9rem; margin-bottom:20px;">
+        Your data is stored in this browser. If the browser data is cleared, your data will be lost.
+        <b>Always keep a backup!</b>
+      </p>
+
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+
+        <!-- Export Button -->
+        <div style="flex:1; min-width:250px; background:var(--primary-light); border-radius:var(--radius); padding:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">📤 Export Backup</h4>
+          <p style="font-size:0.9rem; color:var(--gray-dark); margin-bottom:14px;">
+            Downloads a <b>.json</b> file containing ALL your data (jobs, parts, technicians, suppliers, settings).
+            Save this file on your computer, USB drive, or cloud storage.
+          </p>
+          <button type="button" class="btn btn-primary" id="btn-export">
+            📤 Export All Data
+          </button>
+        </div>
+
+        <!-- Import Button -->
+        <div style="flex:1; min-width:250px; background:var(--info-light); border-radius:var(--radius); padding:20px;">
+          <h4 style="color:var(--info); margin-bottom:8px;">📥 Import Backup</h4>
+          <p style="font-size:0.9rem; color:var(--gray-dark); margin-bottom:14px;">
+            Restore your data from a previously exported <b>.json</b> backup file.
+            <b>Warning:</b> This will replace ALL current data.
+          </p>
+          <button type="button" class="btn btn-info" id="btn-import-trigger">
+            📥 Import Data from File
+          </button>
+          <!-- Hidden file input (triggered by button above) -->
+          <input type="file" id="import-file" accept=".json" style="display:none;">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================
+         DANGER ZONE: Clear All Data
+         ======================================================== -->
+    <div class="panel" style="border-left: 4px solid var(--danger);">
+      <div class="panel-title" style="color:var(--danger);">🚨 Danger Zone</div>
+      <p style="color:var(--gray-dark); font-size:0.9rem; margin-bottom:16px;">
+        This will permanently delete <b>ALL</b> your data — jobs, parts, technicians, suppliers, and settings.
+        The system will reset to factory defaults. <b>This cannot be undone!</b>
+      </p>
+      <p style="color:var(--danger); font-size:0.9rem; margin-bottom:16px;">
+        ⚠️ <b>Make sure you have exported a backup before doing this!</b>
+      </p>
+      <button type="button" class="btn btn-danger" id="btn-clear-all">
+        🗑️ Clear All Data
+      </button>
+    </div>
+
+    <!-- ========================================================
+         SYSTEM INFO
+         ======================================================== -->
+    <div class="panel" style="background: var(--primary-light); border-left: 4px solid var(--primary-bright);">
+      <div class="panel-title" style="border-bottom-color: var(--primary-bright);">ℹ️ System Information</div>
+      <div style="display:grid; grid-template-columns: auto 1fr; gap:8px 20px; font-size:0.92rem;">
+        <span style="color:var(--gray); font-weight:600;">System:</span>
+        <span>ShopTrack — Auto Repair Shop Manager</span>
+
+        <span style="color:var(--gray); font-weight:600;">Version:</span>
+        <span>1.0</span>
+
+        <span style="color:var(--gray); font-weight:600;">Storage:</span>
+        <span>Browser localStorage (local data only)</span>
+
+        <span style="color:var(--gray); font-weight:600;">Backup Format:</span>
+        <span>JSON file (.json)</span>
+
+        <span style="color:var(--gray); font-weight:600;">Built With:</span>
+        <span>HTML + CSS + JavaScript (no frameworks)</span>
+
+        <span style="color:var(--gray); font-weight:600;">Designed For:</span>
+        <span>Auto repair shop bi-monthly reporting</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  js/utils.js
+  js/storage.js>
+  js/app.js
+  <script src="js/settings.js"></script>
+
+</body>
+</html>

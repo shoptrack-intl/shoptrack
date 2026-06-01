@@ -1,0 +1,53 @@
+/* ============================================================
+   ShopTrack - Print Styles
+   Hides UI elements, shows only report content
+   ============================================================ */
+
+@media print {
+  body { background: white; color: black; font-size: 11pt; }
+
+  .sidebar, .sidebar-toggle, .toast-container, .modal-overlay,
+  .filters, .form-actions, .btn, .quick-actions, .backup-notice,
+  .table-actions, .panel:not(.report-output), .page-header .btn,
+  .cards, .report-cards, .no-print, form, button { display: none !important; }
+
+  .main { margin-left: 0 !important; padding: 0 !important; }
+
+  .report-output {
+    border: none !important; box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .report-output h2 { font-size: 16pt; margin-bottom: 4pt; color: black; }
+  .report-output .report-subtitle { font-size: 10pt; margin-bottom: 14pt; color: #333; }
+  .report-output .shop-header h3 { color: black; }
+
+  table { font-size: 9pt; page-break-inside: auto; }
+  thead th {
+    background: #333 !important; color: white !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  tbody tr { page-break-inside: avoid; }
+  tbody tr:nth-child(even) {
+    background: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  tbody tr:hover { background: inherit !important; }
+
+  .report-total {
+    background: #ddd !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    border-top: 2px solid black;
+  }
+
+  .print-header {
+    display: block !important; text-align: center;
+    border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 16px;
+  }
+  .print-header h1 { font-size: 14pt; }
+  .print-header p { font-size: 9pt; color: #555; }
+
+  @page { margin: 0.6in; }
+}
+
+.print-header { display: none; }
