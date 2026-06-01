@@ -118,26 +118,23 @@ function addTech(e) {
 // TECHNICIANS — Toggle active/inactive status
 // ============================================================
 function toggleTechStatus(id) {
-  const tech = Storage.getById(KEYS.techs, id);
+  var tech = Storage.getById(KEYS.techs, id);
   if (!tech) return;
 
-  const newStatus = tech.status === 'active' ? 'inactive' : 'active';
+  var newStatus = tech.status === 'active' ? 'inactive' : 'active';
 
   if (newStatus === 'inactive') {
-    // Confirm before deactivating
-    showConfirm(
-      `Deactivate "${tech.name}"? They will no longer appear in dropdown menus for new entries. Their existing data will NOT be deleted.`,
-      () => {
+    showConfirm('Deactivate "' + tech.name + '"? They will no longer appear in dropdown menus. Their existing data will NOT be deleted.').then(function(confirmed) {
+      if (confirmed) {
         Storage.update(KEYS.techs, id, { status: newStatus });
         renderTechs();
-        showToast(`${tech.name} has been deactivated.`, 'warning');
+        showToast(tech.name + ' has been deactivated.', 'warning');
       }
-    );
+    });
   } else {
-    // Activate immediately (no confirmation needed)
     Storage.update(KEYS.techs, id, { status: newStatus });
     renderTechs();
-    showToast(`${tech.name} has been activated!`, 'success');
+    showToast(tech.name + ' has been activated!', 'success');
   }
 }
 
@@ -208,18 +205,17 @@ function addSupplier(e) {
 // SUPPLIERS — Delete a supplier
 // ============================================================
 function deleteSupplier(idx) {
-  const suppliers = Storage.getAll(KEYS.suppliers);
-  const name = suppliers[idx];
+  var suppliers = Storage.getAll(KEYS.suppliers);
+  var name = suppliers[idx];
 
-  showConfirm(
-    `Remove supplier "${name}"? This will NOT affect existing part entries that reference this supplier.`,
-    () => {
+  showConfirm('Remove supplier "' + name + '"? This will NOT affect existing part entries.').then(function(confirmed) {
+    if (confirmed) {
       suppliers.splice(idx, 1);
       localStorage.setItem(KEYS.suppliers, JSON.stringify(suppliers));
       renderSuppliers();
-      showToast(`Supplier "${name}" removed.`, 'warning');
+      showToast('Supplier "' + name + '" removed.', 'warning');
     }
-  );
+  });
 }
 
 // ============================================================
@@ -260,11 +256,11 @@ function handleExport() {
 // IMPORT — Restore data from a JSON backup file
 // ============================================================
 async function handleImport(e) {
-  const file = e.target.files[0];
+  var file = e.target.files[0];
   if (!file) return;
 
   try {
-    const data = await Utils.parseJsonFile(file);
+    var data = await Utils.parseJsonFile(file);
 
     // Validate the file format
     if (!data.version) {
@@ -272,22 +268,50 @@ async function handleImport(e) {
       return;
     }
 
-    // Show confirmation before overwriting
-    const jobCount = (data.jobs || []).length;
-    const partCount = (data.parts || []).length;
+    // --- Build confirmation message using DOM (not HTML strings) ---
+    var confirmDiv = document.createElement("div");
 
-    showConfirm(
-      `This will REPLACE all current data with the backup file:<br><br>
-       <b>Jobs:</b> ${jobCount} entries<br>
-       <b>Parts:</b> ${partCount} entries<br>
-       <b>Exported on:</b> ${data.exportDate ? new Date(data.exportDate).toLocaleString() : 'Unknown'}<br><br>
-       Are you sure you want to continue?`,
-      () => {
+    var line1 = document.createElement("p");
+    line1.style.cssText = "margin-bottom:12px;font-size:1rem;";
+    line1.textContent = "This will REPLACE all current data with the backup file:";
+    confirmDiv.appendChild(line1);
+
+    var details = document.createElement("div");
+    details.style.cssText = "text-align:left;background:#f5f5f5;padding:12px 16px;border-radius:8px;margin-bottom:12px;";
+
+    function addDetail(label, value) {
+      var p = document.createElement("p");
+      p.style.cssText = "margin:4px 0;font-size:0.95rem;";
+      var b = document.createElement("strong");
+      b.textContent = label;
+      p.appendChild(b);
+      p.appendChild(document.createTextNode(value));
+      details.appendChild(p);
+    }
+
+    var jobCount = (data.jobs || []).length;
+    var partCount = (data.parts || []).length;
+    var exportDate = data.exportDate ? new Date(data.exportDate).toLocaleString() : "Unknown";
+
+    addDetail("Jobs: ", jobCount + " entries");
+    addDetail("Parts: ", partCount + " entries");
+    addDetail("Exported on: ", exportDate);
+    confirmDiv.appendChild(details);
+
+    var line2 = document.createElement("p");
+    line2.style.cssText = "font-weight:600;color:#c62828;";
+    line2.textContent = "Are you sure you want to continue?";
+    confirmDiv.appendChild(line2);
+
+    // Pass DOM element to showConfirm
+    showConfirm(confirmDiv).then(function(confirmed) {
+      if (confirmed) {
         Storage.importAll(data);
         showToast('Data imported successfully! Refreshing page...', 'success', 3000);
-        setTimeout(() => location.reload(), 1500);
+        setTimeout(function() { location.reload(); }, 1500);
       }
-    );
+    });
+
   } catch (err) {
     showToast('Error reading file: ' + err.message, 'error');
   }
@@ -300,18 +324,15 @@ async function handleImport(e) {
 // CLEAR ALL — Delete everything (double confirmation!)
 // ============================================================
 function handleClearAll() {
-  showConfirm(
-    '⚠️ This will <b>DELETE ALL</b> your data — jobs, parts, technicians, suppliers, everything.<br><br>This action <b>CANNOT be undone</b>!<br><br>Are you absolutely sure?',
-    () => {
-      // Second confirmation — extra safety
-      showConfirm(
-        '🚨 <b>LAST WARNING</b>: ALL data will be permanently deleted.<br><br>Have you exported a backup? If not, click "Cancel" and export first.<br><br>Continue with deletion?',
-        () => {
+  showConfirm("This will DELETE ALL your data — jobs, parts, technicians, suppliers, everything. This action CANNOT be undone! Are you absolutely sure?").then(function(confirmed) {
+    if (confirmed) {
+      showConfirm("LAST WARNING: ALL data will be permanently deleted. Have you exported a backup? If not, click Cancel and export first. Continue with deletion?").then(function(confirmed2) {
+        if (confirmed2) {
           Storage.clearAll();
           showToast('All data has been cleared. Page will refresh...', 'warning', 3000);
-          setTimeout(() => location.reload(), 1500);
+          setTimeout(function() { location.reload(); }, 1500);
         }
-      );
+      });
     }
-  );
+  });
 }

@@ -35,9 +35,14 @@ function showConfirm(message) {
     overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;";
     var card = document.createElement("div");
     card.style.cssText = "background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);";
-    var msg = document.createElement("p");
+    var msg = document.createElement("div");
     msg.style.cssText = "font-size:1.05rem;color:#333;margin-bottom:24px;";
-    msg.textContent = message;
+    // Support both string and DOM node
+    if (typeof message === "string") {
+      msg.textContent = message;
+    } else if (message && message.nodeType) {
+      msg.appendChild(message);
+    }
     card.appendChild(msg);
     var btnGroup = document.createElement("div");
     btnGroup.style.cssText = "display:flex;gap:12px;justify-content:center;";
