@@ -118,12 +118,9 @@ function populateDropdowns() {
 
 // --- Load Dashboard Stats ---
 function loadDashboard() {
-  var jobs = [];
-  var parts = [];
-  var techs = [];
-  try { jobs = JSON.parse(localStorage.getItem("shoptrack_jobs")) || []; } catch(e) {}
-  try { parts = JSON.parse(localStorage.getItem("shoptrack_parts")) || []; } catch(e) {}
-  try { techs = JSON.parse(localStorage.getItem("shoptrack_technicians")) || []; } catch(e) {}
+  var jobs = getData("jobs");
+  var parts = getData("parts");
+  var techs = getData("technicians") || getData("techs");
 
   var totalJobs = jobs.length;
   var totalHours = 0;
